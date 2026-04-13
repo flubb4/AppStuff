@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2e7d5b" />
+  <title>Histamin-Checker</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="icon.svg" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-header__inner">
+      <h1>🌿 Histamin-Checker</h1>
+      <p class="tagline">Rezept prüfen bei Histaminintoleranz</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="tabs" role="tablist">
+        <button class="tab is-active" data-tab="url" role="tab">🔗 Link</button>
+        <button class="tab" data-tab="text" role="tab">📋 Text</button>
+      </div>
+
+      <div class="tab-content is-active" data-tab-content="url">
+        <label for="url-input" class="label">Rezept-URL einfügen</label>
+        <input id="url-input" type="url" inputmode="url" autocomplete="off"
+               placeholder="https://www.chefkoch.de/rezepte/..." />
+        <button id="check-url-btn" class="btn btn--primary">Rezept prüfen</button>
+        <p class="hint">Die App lädt die Seite über einen Reader-Dienst und extrahiert die Zutaten.</p>
+      </div>
+
+      <div class="tab-content" data-tab-content="text">
+        <label for="text-input" class="label">Zutatenliste einfügen</label>
+        <textarea id="text-input" rows="8"
+                  placeholder="z. B.&#10;200 g Tomaten&#10;1 EL Olivenöl&#10;100 g Parmesan&#10;..."></textarea>
+        <button id="check-text-btn" class="btn btn--primary">Zutaten prüfen</button>
+      </div>
+    </section>
+
+    <section id="status" class="status" hidden></section>
+
+    <section id="results" class="results" hidden>
+      <div class="score-card">
+        <div class="score-card__head">
+          <h2>Ergebnis</h2>
+          <span id="verdict" class="verdict"></span>
+        </div>
+        <div class="score-bar">
+          <div class="score-bar__segment score-bar__segment--green" id="bar-green"></div>
+          <div class="score-bar__segment score-bar__segment--yellow" id="bar-yellow"></div>
+          <div class="score-bar__segment score-bar__segment--red" id="bar-red"></div>
+        </div>
+        <div class="score-counts">
+          <span class="chip chip--green"><span id="count-green">0</span> gut</span>
+          <span class="chip chip--yellow"><span id="count-yellow">0</span> bedingt</span>
+          <span class="chip chip--red"><span id="count-red">0</span> meiden</span>
+        </div>
+      </div>
+
+      <h3 class="section-title">Gefundene Zutaten</h3>
+      <ul id="ingredient-list" class="ingredient-list"></ul>
+
+      <details class="raw-details">
+        <summary>Gefundener Rezepttext</summary>
+        <pre id="raw-text"></pre>
+      </details>
+    </section>
+
+    <section class="card info">
+      <h3>Legende</h3>
+      <ul class="legend">
+        <li><span class="dot dot--green"></span> <strong>Grün</strong> – gut verträglich, histaminarm</li>
+        <li><span class="dot dot--yellow"></span> <strong>Gelb</strong> – bedingt, individuell testen</li>
+        <li><span class="dot dot--red"></span> <strong>Rot</strong> – histaminreich / Liberator, besser meiden</li>
+      </ul>
+      <p class="disclaimer">
+        Diese App ersetzt keine ärztliche oder ernährungstherapeutische Beratung.
+        Histamintoleranz ist individuell – im Zweifel mit Fachpersonen abklären.
+      </p>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Made with 🌿 · Offline-fähig · Daten lokal im Browser</p>
+  </footer>
+
+  <script src="data/ingredients.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
