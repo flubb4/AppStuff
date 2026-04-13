@@ -36,6 +36,9 @@ window.HISTAMINE_DB = [
   { name: "Haferflocken", level: "green", keywords: ["haferflocken", "hafer"] },
   { name: "Dinkel", level: "green", keywords: ["dinkel", "dinkelmehl"] },
   { name: "Mais", level: "green", keywords: ["mais", "maismehl", "polenta", "maisgrieß", "maisgriess"] },
+  { name: "Reisnudeln", level: "green", keywords: ["reisnudeln", "glasnudeln", "mienudeln"] },
+  { name: "Speisestärke", level: "green", keywords: ["speisestärke", "speisestaerke", "maisstärke", "maisstaerke", "kartoffelstärke", "kartoffelstaerke", "maizena", "mondamin"] },
+  { name: "Wasser", level: "green", keywords: ["wasser", "mineralwasser", "sprudel"] },
 
   // Gemüse
   { name: "Karotte/Möhre", level: "green", keywords: ["karotte", "karotten", "möhre", "möhren", "moehren", "moehre", "mohrrübe"] },
@@ -153,6 +156,7 @@ window.HISTAMINE_DB = [
   { name: "Sojasahne", level: "yellow", keywords: ["sojasahne", "soja-sahne"] },
   { name: "Reismilch", level: "yellow", keywords: ["reismilch", "reisdrink"] },
   { name: "Hafermilch", level: "yellow", keywords: ["hafermilch", "haferdrink"] },
+  { name: "Nudeln/Pasta (Weizen)", level: "yellow", keywords: ["spaghetti", "nudeln", "pasta", "linguine", "penne", "fusilli", "tagliatelle", "farfalle", "makkaroni", "maccheroni", "rigatoni", "bandnudeln", "spätzle", "spaetzle", "tortellini", "ravioli", "gnocchi", "lasagneplatten", "lasagne", "cannelloni", "fettuccine", "rotini", "orzo"] },
 
   // ========== ROT: Meiden ==========
 

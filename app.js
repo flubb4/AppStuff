@@ -63,21 +63,51 @@
   // Level priority: red > yellow > green (worst wins if overlap)
   const LEVEL_ORDER = { red: 3, yellow: 2, green: 1 };
 
-  // ---------- Ingredient detection ----------
-  function detectInText(haystack) {
-    const norm = " " + normalize(haystack).replace(/[^a-z0-9 ]+/g, " ") + " ";
-    const matched = new Map(); // entry.name -> entry
+  // ---------- Negation handling ----------
+  // Strips "ohne X", "kein X", "keine X", "nicht X" clauses so that ingredients
+  // in negated phrases (e.g. "Brühe ohne Hefe") aren't falsely matched.
+  const NEGATION_REGEX =
+    /\b(?:ohne|kein|keine|keinen|keinem|keiner|nicht)\s+[a-zäöüß-]+/gi;
 
-    for (const { entry, normalizedKeywords } of KEYWORD_INDEX) {
-      for (const kw of normalizedKeywords) {
-        const needle = " " + kw.replace(/[^a-z0-9 ]+/g, " ") + " ";
-        if (norm.includes(needle)) {
-          // If already matched at higher level, skip
-          const existing = matched.get(entry.name);
-          if (!existing || LEVEL_ORDER[entry.level] > LEVEL_ORDER[existing.level]) {
-            matched.set(entry.name, entry);
+  function stripNegations(line) {
+    return line.replace(NEGATION_REGEX, " ");
+  }
+
+  // ---------- Ingredient detection ----------
+  // Processes text line-by-line so that negations are scoped to a single line
+  // and a short note on one line can't affect another ingredient's match.
+  function detectInText(text) {
+    if (!text) return [];
+    const matched = new Map(); // entry.name -> entry
+    const lines = text.split(/\r?\n/);
+
+    for (const rawLine of lines) {
+      const cleanLine = stripNegations(rawLine);
+      const norm =
+        " " +
+        normalize(cleanLine)
+          .replace(/[^a-z0-9 ]+/g, " ")
+          .replace(/\s+/g, " ")
+          .trim() +
+        " ";
+      if (norm.trim() === "") continue;
+
+      for (const { entry, normalizedKeywords } of KEYWORD_INDEX) {
+        for (const kw of normalizedKeywords) {
+          const needle =
+            " " +
+            kw.replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim() +
+            " ";
+          if (norm.includes(needle)) {
+            const existing = matched.get(entry.name);
+            if (
+              !existing ||
+              LEVEL_ORDER[entry.level] > LEVEL_ORDER[existing.level]
+            ) {
+              matched.set(entry.name, entry);
+            }
+            break;
           }
-          break;
         }
       }
     }
@@ -87,32 +117,45 @@
     );
   }
 
+  // ---------- Ingredient block extraction ----------
+  // Tries to isolate the "Zutaten" / "Ingredients" section of a recipe page so
+  // that we don't scan comments, related recipes or nav menus for ingredients.
+  function extractIngredientBlock(text) {
+    if (!text) return "";
+    const headerRegex =
+      /(?:^|\n)[^\S\n]*(?:#{1,6}\s*|\*{1,2}\s*)?(zutaten|ingredients)\b[^\n]*(?:\n|$)/i;
+    const headerMatch = text.match(headerRegex);
+    if (!headerMatch) return "";
+
+    const startIdx = headerMatch.index + headerMatch[0].length;
+    const remaining = text.slice(startIdx);
+
+    // End at the next major section / Zubereitung / Kommentare / Nährwerte ...
+    const endRegex =
+      /\n[^\S\n]*(?:#{1,6}\s*|\*{1,2}\s*)?(zubereitung|anleitung|instructions|directions|preparation|method|tipps?|notes?|ähnlich|verwand|nährwert|naehrwert|kommentar|comment|hinweis|schritt\s*1|empfehlung)\b/i;
+    const endMatch = remaining.match(endRegex);
+
+    const block = endMatch
+      ? remaining.slice(0, endMatch.index)
+      : remaining.slice(0, 3000);
+    return block.trim();
+  }
+
   // ---------- Ingredient line extraction ----------
-  // Takes a blob of text (recipe page text or user input) and tries to extract
-  // lines that look like ingredient list items.
+  // Loose heuristic: return non-empty lines short enough to plausibly be
+  // ingredient entries. Used only for display, not for detection.
   function extractIngredientLines(text) {
     if (!text) return [];
-    const lines = text
+    return text
       .split(/\r?\n/)
       .map((l) => l.replace(/\s+/g, " ").trim())
-      .filter(Boolean);
-
-    // Heuristic: ingredient lines often start with a number/amount or unit
-    const amountRegex =
-      /^(\s*[-*•·]?\s*)?(?:\d+[.,]?\d*\s*\/?\s*\d*\s*)?(g|kg|ml|l|el|tl|prise|prisen|pck|pkt|packung|packungen|bund|stück|stueck|stk|dose|dosen|tasse|tassen|becher|scheibe|scheiben|zehe|zehen|handvoll)?\s+[a-zäöüß]/i;
-
-    const candidates = [];
-    for (const line of lines) {
-      if (line.length > 160) continue; // too long, probably prose
-      if (amountRegex.test(line)) {
-        candidates.push(line);
-      }
-    }
-    // Fallback: if we found too few lines, include shorter lines too
-    if (candidates.length < 3) {
-      return lines.filter((l) => l.length < 140);
-    }
-    return candidates;
+      .filter(
+        (l) =>
+          l.length > 0 &&
+          l.length < 140 &&
+          /[a-zA-ZÄÖÜäöüß]{3,}/.test(l) &&
+          !/^[#*=\-_]+\s*$/.test(l)
+      );
   }
 
   // ---------- Fetching via reader service ----------
@@ -213,12 +256,21 @@
     hideResults();
     setStatus("Rezept wird geladen …", "loading");
     try {
-      const text = await fetchRecipeText(url);
-      const ingredientLines = extractIngredientLines(text);
-      const haystack = ingredientLines.join("\n") || text;
+      const fullText = await fetchRecipeText(url);
+      const block = extractIngredientBlock(fullText);
+      let haystack;
+      let display;
+      if (block) {
+        haystack = block;
+        display = block;
+      } else {
+        const lines = extractIngredientLines(fullText);
+        haystack = lines.join("\n");
+        display = haystack || fullText.slice(0, 2000);
+      }
       const matches = detectInText(haystack);
       setStatus("");
-      renderResults(matches, ingredientLines.join("\n") || text.slice(0, 2000));
+      renderResults(matches, display);
     } catch (err) {
       console.error(err);
       setStatus(
