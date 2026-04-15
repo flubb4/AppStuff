@@ -1,5 +1,5 @@
 // Minimaler Service Worker – cached die statischen Assets für Offline-Nutzung.
-const CACHE = "histamin-checker-v1";
+const CACHE = "histamin-checker-v2";
 const ASSETS = [
   "./",
   "./index.html",

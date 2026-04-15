@@ -370,6 +370,31 @@ textarea:focus {
   font-style: italic;
 }
 
+.btn--secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  margin-top: 8px;
+}
+.btn--secondary:hover { background: var(--border); }
+
+.barcode-reader {
+  margin-top: 14px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #000;
+  min-height: 220px;
+}
+#barcode-reader video {
+  width: 100% !important;
+  max-height: 320px;
+  object-fit: cover;
+  display: block;
+}
+/* Interne html5-qrcode UI-Elemente ausblenden */
+#barcode-reader img,
+#barcode-reader #html5-qrcode-anchor-scan-type-change { display: none !important; }
+
 .app-footer {
   text-align: center;
   padding: 20px 16px;
