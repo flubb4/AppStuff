@@ -23,6 +23,7 @@
       <div class="tabs" role="tablist">
         <button class="tab is-active" data-tab="url" role="tab">🔗 Link</button>
         <button class="tab" data-tab="text" role="tab">📋 Text</button>
+        <button class="tab" data-tab="barcode" role="tab">📷 Scan</button>
       </div>
 
       <div class="tab-content is-active" data-tab-content="url">
@@ -38,6 +39,13 @@
         <textarea id="text-input" rows="8"
                   placeholder="z. B.&#10;200 g Tomaten&#10;1 EL Olivenöl&#10;100 g Parmesan&#10;..."></textarea>
         <button id="check-text-btn" class="btn btn--primary">Zutaten prüfen</button>
+      </div>
+      <div class="tab-content" data-tab-content="barcode">
+        <label class="label">Barcode scannen</label>
+        <button id="start-scan-btn" class="btn btn--primary">📷 Kamera starten</button>
+        <div id="barcode-reader" class="barcode-reader" hidden></div>
+        <button id="stop-scan-btn" class="btn btn--secondary" hidden>Abbrechen</button>
+        <p class="hint">Halte die Kamera auf den Barcode eines Produkts. Die Zutaten werden automatisch über Open Food Facts geprüft.</p>
       </div>
     </section>
 
@@ -88,6 +96,7 @@
     <p>Made with 🌿 · Offline-fähig · Daten lokal im Browser</p>
   </footer>
 
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script src="data/ingredients.js"></script>
   <script src="app.js"></script>
 </body>

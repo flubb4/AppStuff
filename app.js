@@ -293,6 +293,107 @@
     renderResults(matches, text);
   });
 
+  // ---------- Barcode Scanner ----------
+  let barcodeScanner = null;
+  let scannerActive = false;
+
+  async function stopScanner() {
+    if (barcodeScanner && scannerActive) {
+      try {
+        await barcodeScanner.stop();
+        barcodeScanner.clear();
+      } catch (e) { /* ignore */ }
+      scannerActive = false;
+    }
+    $("#barcode-reader").hidden = true;
+    $("#start-scan-btn").hidden = false;
+    $("#stop-scan-btn").hidden = true;
+  }
+
+  async function lookupBarcode(barcode) {
+    const res = await fetch(
+      "https://world.openfoodfacts.org/api/v2/product/" + barcode + ".json"
+    );
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    if (data.status !== 1) throw new Error("nicht gefunden");
+    return data.product;
+  }
+
+  function getProductIngredients(product) {
+    return (
+      product.ingredients_text_de ||
+      product.ingredients_text ||
+      (Array.isArray(product.ingredients)
+        ? product.ingredients.map((i) => i.text || "").filter(Boolean).join(", ")
+        : "")
+    );
+  }
+
+  $("#start-scan-btn").addEventListener("click", async () => {
+    if (typeof Html5Qrcode === "undefined") {
+      setStatus("Scanner-Bibliothek konnte nicht geladen werden. Bitte Seite neu laden.", "error");
+      return;
+    }
+    const readerEl = $("#barcode-reader");
+    readerEl.hidden = false;
+    $("#start-scan-btn").hidden = true;
+    $("#stop-scan-btn").hidden = false;
+    hideResults();
+    setStatus("Kamera wird gestartet …", "loading");
+
+    barcodeScanner = new Html5Qrcode("barcode-reader");
+    try {
+      await barcodeScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 260, height: 120 } },
+        async (barcode) => {
+          await stopScanner();
+          setStatus("Produkt wird gesucht …", "loading");
+          try {
+            const product = await lookupBarcode(barcode);
+            const ingredientsText = getProductIngredients(product);
+            if (!ingredientsText) {
+              setStatus(
+                "Zutaten für dieses Produkt sind nicht in der Open Food Facts Datenbank.",
+                "error"
+              );
+              return;
+            }
+            const matches = detectInText(ingredientsText);
+            const name =
+              product.product_name_de || product.product_name || "Produkt " + barcode;
+            setStatus("");
+            renderResults(matches, "Produkt: " + name + "\n\nZutaten:\n" + ingredientsText);
+          } catch (err) {
+            setStatus(
+              "Produkt nicht gefunden (Barcode: " + barcode + ")." +
+              " Möglicherweise fehlt das Produkt in der Open Food Facts Datenbank.",
+              "error"
+            );
+          }
+        }
+      );
+      scannerActive = true;
+      setStatus("");
+    } catch (err) {
+      setStatus(
+        "Kamera konnte nicht gestartet werden. Bitte Kamerazugriff im Browser erlauben.",
+        "error"
+      );
+      await stopScanner();
+    }
+  });
+
+  $("#stop-scan-btn").addEventListener("click", stopScanner);
+
+  // Scanner stoppen wenn Tab gewechselt wird
+  $$(".tab").forEach((tab) => {
+    if (tab.dataset.tab !== "barcode") {
+      tab.addEventListener("click", () => { if (scannerActive) stopScanner(); });
+    }
+  });
+
   // ---------- Service Worker (offline) ----------
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
