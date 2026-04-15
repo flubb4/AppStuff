@@ -94,7 +94,7 @@ window.HISTAMINE_DB = [
   { name: "Johannisbeere", level: "green", keywords: ["johannisbeere", "johannisbeeren", "ribisel", "jostabeere", "jostabeeren"] },
   { name: "Kaki / Sharon", level: "green", keywords: ["kaki", "sharon"] },
   { name: "Kirsche", level: "green", keywords: ["kirsche", "kirschen", "sauerkirsche", "süßkirsche"] },
-  { name: "Kokosnuss", level: "green", keywords: ["kokosnuss", "kokosflocken", "kokosraspeln"] },
+  { name: "Kokosnuss / Kokosfett", level: "green", keywords: ["kokosnuss", "kokosflocken", "kokosraspeln", "kokosfett", "kokosöl", "kokosnussöl", "kokosnussfett"] },
   { name: "Litschi", level: "green", keywords: ["litschi", "litschis"] },
   { name: "Melone", level: "green", keywords: ["melone", "honigmelone", "galiamelone", "wassermelone"] },
   { name: "Nektarine", level: "green", keywords: ["nektarine", "nektarinen"] },
@@ -105,7 +105,7 @@ window.HISTAMINE_DB = [
   { name: "Weintraube", level: "green", keywords: ["weintraube", "weintrauben", "trauben"] },
 
   // Milchprodukte (frisch, nicht fermentiert)
-  { name: "Milch (frisch/haltbar)", level: "green", keywords: ["milch", "vollmilch", "frischmilch", "h-milch"] },
+  { name: "Milch (frisch/haltbar)", level: "green", keywords: ["milch", "vollmilch", "frischmilch", "h-milch", "magermilch", "magermilchpulver", "vollmilchpulver", "milchpulver", "molke", "molkenpulver", "molkenerzeugnis", "buttermilchpulver"] },
   { name: "Kokosmilch", level: "green", keywords: ["kokosmilch"] },
   { name: "Sahne", level: "green", keywords: ["sahne", "schlagsahne", "schmand"] },
   { name: "Frischkäse", level: "green", keywords: ["frischkäse"] },
@@ -122,7 +122,7 @@ window.HISTAMINE_DB = [
   { name: "Rapsöl", level: "green", keywords: ["rapsöl"] },
   { name: "Maiskeimöl", level: "green", keywords: ["maiskeimöl"] },
   { name: "Margarine", level: "green", keywords: ["margarine"] },
-  { name: "Butter", level: "green", keywords: ["butter"] },
+  { name: "Butter", level: "green", keywords: ["butter", "süßrahmbutter", "sauerrahmbutter", "landbutter"] },
 
   // Kräuter & Gewürze (gut verträglich)
   { name: "Basilikum", level: "green", keywords: ["basilikum"] },
@@ -141,13 +141,18 @@ window.HISTAMINE_DB = [
   { name: "Paprikapulver (mild)", level: "green", keywords: ["paprikapulver", "paprika edelsüß", "rosenpaprika"] },
   { name: "Branntweinessig / Essigessenz", level: "green", keywords: ["branntweinessig", "essigessenz"] },
 
+  // Öle & Fette (gut verträglich)
+  { name: "Rapsöl", level: "green", keywords: ["rapsöl", "rapsoel"] },
+  { name: "Palmöl / Palmkernöl", level: "green", keywords: ["palmöl", "palmkernöl", "palmfett", "palmkernfett"] },
+  { name: "Olivenöl", level: "green", keywords: ["olivenöl", "extra vergine"] },
+
   // Backzutaten (gut verträglich)
   { name: "Gelatine", level: "green", keywords: ["gelatine"] },
   { name: "Natron", level: "green", keywords: ["natron"] },
   { name: "Weinsteinbackpulver", level: "green", keywords: ["weinsteinbackpulver"] },
 
   // Süßungsmittel (gut verträglich)
-  { name: "Zucker", level: "green", keywords: ["zucker", "rohrzucker", "puderzucker", "kristallzucker", "brauner zucker", "gelierzucker", "fruchtzucker", "kokosblütenzucker"] },
+  { name: "Zucker", level: "green", keywords: ["zucker", "rohrzucker", "puderzucker", "kristallzucker", "brauner zucker", "gelierzucker", "fruchtzucker", "kokosblütenzucker", "glukosesirup", "glukose", "fruktosesirup", "glukose-fruktose-sirup", "isoglukose", "invertzucker", "invertzuckersirup", "dextrose", "maltodextrin", "laktose"] },
   { name: "Ahornsirup", level: "green", keywords: ["ahornsirup"] },
   { name: "Honig", level: "green", keywords: ["honig"] },
   { name: "Reissirup", level: "green", keywords: ["reissirup"] },
@@ -204,6 +209,15 @@ window.HISTAMINE_DB = [
   { name: "Haferdrink", level: "yellow", keywords: ["hafermilch", "haferdrink"] },
   { name: "Reisdrink", level: "yellow", keywords: ["reismilch", "reisdrink"] },
   { name: "Laktosefreie Milch", level: "yellow", keywords: ["laktosefrei"] },
+
+  // Zusatzstoffe & Aromen (bedingt verträglich)
+  { name: "Aroma / Aromen", level: "yellow", keywords: ["aroma", "aromen", "natürliches aroma", "natürliche aromen", "aromastoffe"] },
+  { name: "Kakaobutter", level: "yellow", keywords: ["kakaobutter", "kakao butter"] },
+  { name: "Lecithin (Sonnenblume)", level: "yellow", keywords: ["lecithin", "sonnenblumenlecithin"] },
+  { name: "Malzextrakt / Gerstenmalz", level: "yellow", keywords: ["malzextrakt", "gerstenmalz", "malz", "weizenmalz"] },
+  { name: "Emulgator", level: "yellow", keywords: ["emulgator", "e471", "e472", "e473", "e474", "e475", "e476", "e481", "e482"] },
+  { name: "Verdickungsmittel / Stabilisator", level: "yellow", keywords: ["verdickungsmittel", "stabilisator", "xanthan", "guar", "johannisbrotkernmehl", "pektin", "carrageen", "carrageenan", "agar", "e407", "e410", "e412", "e415", "e440"] },
+  { name: "Farbstoffe (künstlich)", level: "yellow", keywords: ["farbstoff", "e100", "e101", "e102", "e104", "e110", "e120", "e122", "e123", "e124", "e129", "e131", "e132", "e133", "e150", "e151", "e153", "e160", "e161", "e162", "e163", "e170", "e171", "e172"] },
 
   // Getreide (bedingt verträglich)
   { name: "Weizen / Weizenmehl", level: "yellow", keywords: ["weizenmehl", "mehl type", "mehl 405", "mehl 550", "weizen", "mehl"] },
@@ -267,8 +281,8 @@ window.HISTAMINE_DB = [
   { name: "Hefe", level: "red", keywords: ["hefe", "backhefe", "trockenhefe", "frischhefe"] },
 
   // Backzutaten (kaum verträglich)
-  { name: "Kakao / Kakaopulver", level: "red", keywords: ["kakaopulver", "kakao"] },
-  { name: "Schokolade / Kuvertüre", level: "red", keywords: ["schokolade", "zartbitter", "kuvertüre", "schokoraspeln", "schokotropfen"] },
+  { name: "Kakao / Kakaomasse", level: "red", keywords: ["kakaopulver", "kakao", "kakaomasse", "kakaoextrakt", "kakaoanteil"] },
+  { name: "Schokolade / Kuvertüre", level: "red", keywords: ["schokolade", "zartbitter", "kuvertüre", "schokoraspeln", "schokotropfen", "vollmilchschokolade", "zartbitterschokolade", "weißschokolade", "schokoladenüberzug", "schokoladenglasur", "kakaoglasur"] },
   { name: "Künstliche Süßstoffe", level: "red", keywords: ["süßstoff", "aspartam", "saccharin"] },
 
   // Chili & Curry
@@ -311,7 +325,7 @@ window.HISTAMINE_DB = [
   { name: "Bohnen (getrocknet / Konserve)", level: "red", keywords: ["kidneybohnen", "weiße bohnen", "schwarze bohnen", "borlottibohnen", "bohnenkonserve"] },
   { name: "Linsen", level: "red", keywords: ["linsen", "rote linsen", "gelbe linsen", "belugalinsen"] },
   { name: "Erbsen (getrocknet)", level: "red", keywords: ["erbsen"] },
-  { name: "Soja / Tofu", level: "red", keywords: ["soja", "sojabohnen", "tofu", "tempeh", "sojamilch", "sojadrink", "edamame", "sojajoghurt", "sojasahne"] },
+  { name: "Soja / Tofu", level: "red", keywords: ["soja", "sojabohnen", "tofu", "tempeh", "sojamilch", "sojadrink", "edamame", "sojajoghurt", "sojasahne", "sojalecithin", "sojaprotein", "sojaextrakt"] },
   { name: "Erdnüsse", level: "red", keywords: ["erdnuss", "erdnüsse", "erdnussbutter", "erdnussmus"] },
 
   // Nüsse (kaum verträglich)
