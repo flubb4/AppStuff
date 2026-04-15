@@ -42,10 +42,13 @@
       </div>
       <div class="tab-content" data-tab-content="barcode">
         <label class="label">Barcode scannen</label>
-        <button id="start-scan-btn" class="btn btn--primary">📷 Kamera starten</button>
+        <button id="start-scan-btn" class="btn btn--primary">📷 Live-Scanner starten</button>
         <div id="barcode-reader" class="barcode-reader" hidden></div>
         <button id="stop-scan-btn" class="btn btn--secondary" hidden>Abbrechen</button>
-        <p class="hint">Halte die Kamera auf den Barcode eines Produkts. Die Zutaten werden automatisch über Open Food Facts geprüft.</p>
+        <div class="scan-divider"><span>oder</span></div>
+        <label for="barcode-file" class="btn btn--secondary btn--file">📸 Foto vom Barcode aufnehmen</label>
+        <input type="file" id="barcode-file" accept="image/*" capture="environment" hidden>
+        <p class="hint">Tipp: Falls der Live-Scanner nicht reagiert, einfach "Foto aufnehmen" nutzen — das klappt auf dem iPhone zuverlässiger.</p>
       </div>
     </section>
 

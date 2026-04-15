@@ -346,32 +346,10 @@
     try {
       await barcodeScanner.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 260, height: 120 } },
+        { fps: 15, qrbox: { width: 280, height: 100 } },
         async (barcode) => {
           await stopScanner();
-          setStatus("Produkt wird gesucht …", "loading");
-          try {
-            const product = await lookupBarcode(barcode);
-            const ingredientsText = getProductIngredients(product);
-            if (!ingredientsText) {
-              setStatus(
-                "Zutaten für dieses Produkt sind nicht in der Open Food Facts Datenbank.",
-                "error"
-              );
-              return;
-            }
-            const matches = detectInText(ingredientsText);
-            const name =
-              product.product_name_de || product.product_name || "Produkt " + barcode;
-            setStatus("");
-            renderResults(matches, "Produkt: " + name + "\n\nZutaten:\n" + ingredientsText);
-          } catch (err) {
-            setStatus(
-              "Produkt nicht gefunden (Barcode: " + barcode + ")." +
-              " Möglicherweise fehlt das Produkt in der Open Food Facts Datenbank.",
-              "error"
-            );
-          }
+          await handleBarcodeResult(barcode);
         }
       );
       scannerActive = true;
@@ -386,6 +364,53 @@
   });
 
   $("#stop-scan-btn").addEventListener("click", stopScanner);
+
+  // ---------- Foto-Fallback ----------
+  async function handleBarcodeResult(barcode) {
+    hideResults();
+    setStatus("Produkt wird gesucht …", "loading");
+    try {
+      const product = await lookupBarcode(barcode);
+      const ingredientsText = getProductIngredients(product);
+      if (!ingredientsText) {
+        setStatus(
+          "Zutaten für dieses Produkt sind nicht in der Open Food Facts Datenbank.",
+          "error"
+        );
+        return;
+      }
+      const matches = detectInText(ingredientsText);
+      const name = product.product_name_de || product.product_name || "Produkt " + barcode;
+      setStatus("");
+      renderResults(matches, "Produkt: " + name + "\n\nZutaten:\n" + ingredientsText);
+    } catch (err) {
+      setStatus(
+        "Produkt nicht gefunden (Barcode: " + barcode + ")." +
+        " Möglicherweise fehlt das Produkt in der Open Food Facts Datenbank.",
+        "error"
+      );
+    }
+  }
+
+  $("#barcode-file").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    e.target.value = "";
+    if (typeof Html5Qrcode === "undefined") {
+      setStatus("Scanner-Bibliothek konnte nicht geladen werden. Bitte Seite neu laden.", "error");
+      return;
+    }
+    setStatus("Barcode wird ausgelesen …", "loading");
+    const tmpScanner = new Html5Qrcode("barcode-reader");
+    try {
+      const barcode = await tmpScanner.scanFile(file, false);
+      await handleBarcodeResult(barcode);
+    } catch (err) {
+      setStatus("Kein Barcode im Foto gefunden. Bitte nochmal versuchen – möglichst nah und gerade.", "error");
+    } finally {
+      try { tmpScanner.clear(); } catch (e) { /* ignore */ }
+    }
+  });
 
   // Scanner stoppen wenn Tab gewechselt wird
   $$(".tab").forEach((tab) => {

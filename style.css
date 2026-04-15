@@ -378,6 +378,28 @@ textarea:focus {
 }
 .btn--secondary:hover { background: var(--border); }
 
+.btn--file {
+  display: block;
+  text-align: center;
+  cursor: pointer;
+}
+
+.scan-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 6px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.scan-divider::before,
+.scan-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
 .barcode-reader {
   margin-top: 14px;
   border-radius: var(--radius-sm);
