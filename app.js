@@ -392,6 +392,20 @@
     }
   }
 
+  // Bild auf max. 1200px verkleinern – iPhone-Fotos sind zu groß für den Scanner
+  async function resizeImageForScan(file, maxWidth = 1200) {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, maxWidth / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    return new Promise((resolve) =>
+      canvas.toBlob((blob) => resolve(new File([blob], "scan.jpg", { type: "image/jpeg" })), "image/jpeg", 0.92)
+    );
+  }
+
   $("#barcode-file").addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -403,10 +417,11 @@
     setStatus("Barcode wird ausgelesen …", "loading");
     const tmpScanner = new Html5Qrcode("barcode-reader");
     try {
-      const barcode = await tmpScanner.scanFile(file, false);
+      const resized = await resizeImageForScan(file);
+      const barcode = await tmpScanner.scanFile(resized, false);
       await handleBarcodeResult(barcode);
     } catch (err) {
-      setStatus("Kein Barcode im Foto gefunden. Bitte nochmal versuchen – möglichst nah und gerade.", "error");
+      setStatus("Kein Barcode gefunden. Tipps: Barcode gerade halten, gute Beleuchtung, nah ran aber scharf.", "error");
     } finally {
       try { tmpScanner.clear(); } catch (e) { /* ignore */ }
     }
